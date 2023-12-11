@@ -1,4 +1,4 @@
-module task-management/task-svc
+module github.com/Akshay9597/Task-Management/task-svc
 
 go 1.21.5
 

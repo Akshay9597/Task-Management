@@ -1,4 +1,4 @@
-package server
+package main
 
 import(
 	"context"
@@ -7,7 +7,7 @@ import(
 	"os"
 	"os/signal"
 	"syscall"
-	"github.com/Akshay9597/Task-Management/tree/task_svc/task-svc/handlers" 
+	"github.com/Akshay9597/Task-Management/task-svc/internal/handlers" 
 )
 
 type Server struct {
@@ -21,13 +21,13 @@ func createServer(handler http.Handler) *Server{
 			Handler: handler,
 			ReadTimeout: 10*time.Second,
 			WriteTimeout: 10*time.Second,
-			MaxHeaderBytes: 1<<20
-		}
+			MaxHeaderBytes: 1<<20,
+		},
 	}
 }
 
 func (s *Server) runServer() error {
-	return s.httpServer.ListenAndServer()
+	return s.httpServer.ListenAndServe()
 }
 
 func (s *Server) stopServer(ctx context.Context)  error {
@@ -36,7 +36,9 @@ func (s *Server) stopServer(ctx context.Context)  error {
 
 func main(){
 
-	server = createServer(handlers.Handler.Init())
+	handler := handlers.NewHandler()
+
+	server := createServer(handler.Init())
 
 	go func() {
 		if err := server.runServer(); err != nil {

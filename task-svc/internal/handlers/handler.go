@@ -15,17 +15,13 @@ func NewHandler() *Handler {
 
 func (h *Handler) Init() *gin.Engine {
 	router := gin.Default()
-	router.use(
+	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
 	)
 
 	router.GET(
-		"/ping",
-		func (ctx *gin.Context) {
-			ctx.String(http.StatusOK, "pong")
-		}
-	)
+		"/ping", func(ctx *gin.Context) {ctx.String(http.StatusOK, "pong")})
 
 	return router
 }
