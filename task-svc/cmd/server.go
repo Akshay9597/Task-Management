@@ -7,7 +7,7 @@ import(
 	"os"
 	"os/signal"
 	"syscall"
-	"handler"
+	"github.com/Akshay9597/Task-Management/tree/task_svc/task-svc/handlers" 
 )
 
 type Server struct {
@@ -36,7 +36,7 @@ func (s *Server) stopServer(ctx context.Context)  error {
 
 func main(){
 
-	server = createServer(handler.Init())
+	server = createServer(handlers.Handler.Init())
 
 	go func() {
 		if err := server.runServer(); err != nil {
