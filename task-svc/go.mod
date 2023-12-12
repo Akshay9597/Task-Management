@@ -2,7 +2,10 @@ module github.com/Akshay9597/Task-Management/task-svc
 
 go 1.21.5
 
-require github.com/gin-gonic/gin v1.9.1
+require (
+	github.com/gin-gonic/gin v1.9.1
+	github.com/jmoiron/sqlx v1.3.5
+)
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect

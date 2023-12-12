@@ -1,0 +1,19 @@
+{
+    "version":2,
+    "port":8080,
+    "endpoints": [
+        {
+            "endpoint":"/tasks",
+            "method":"POST",
+            "backend":[
+                {
+                    "url_pattern": "/api/v1/tasks",
+                    "method":"POST",
+                    "host": [
+                        "http://task-svc:8000"
+                    ]
+                }
+            ]
+        }
+    ]
+}
