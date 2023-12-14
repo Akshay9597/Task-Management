@@ -7,10 +7,9 @@ import (
 	"strconv"
 	"runtime/debug"
 	"github.com/jmoiron/sqlx"
-	"github.com/Akshay9597/Task-Management/task-svc/utils"
 )
 
-func (h *Handler) createPostgresDB(cfg utils.DBConfig) (*sqlx.DB, error){
+func (h *Handler) createPostgresDB(cfg DBConfig) (*sqlx.DB, error){
 	fmt.Print()
 	command := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.Name, cfg.SSLMode, cfg.Password,
@@ -42,7 +41,7 @@ type createTaskResponse struct {
 }
 
 type fetchAllRecordsResponse struct {
-	Records []utils.Task `json:"tasks"`
+	Records []Task `json:"tasks"`
 }
 
 type errorResponse struct {
@@ -64,7 +63,7 @@ func (h *Handler) newTask( ctx *gin.Context){
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := utils.Init()
+				cfg, err := Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}
@@ -74,7 +73,7 @@ func (h *Handler) newTask( ctx *gin.Context){
 		}
 	}()
 
-	var request utils.Task
+	var request Task
 
 	fmt.Print(request.Title)
 
@@ -105,7 +104,7 @@ func (h *Handler) fetchAllRecords(ctx *gin.Context) {
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := utils.Init()
+				cfg, err := Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}
@@ -114,7 +113,7 @@ func (h *Handler) fetchAllRecords(ctx *gin.Context) {
 			}
 		}
 	}()
-	var records [] tasks.Task
+	var records [] Task
 	err:= h.db.Select(&records, "SELECT * FROM tasks")
 
 	if err != nil {
@@ -131,7 +130,7 @@ func (h *Handler) getRecord(ctx *gin.Context) {
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := utils.Init()
+				cfg, err := Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}
@@ -148,7 +147,7 @@ func (h *Handler) getRecord(ctx *gin.Context) {
 		return
 	}
 
-	var task tasks.Task
+	var task Task
 	err = h.db.Get(&task, "SELECT * FROM tasks WHERE id=$1", id)
 	if err != nil {
 		fmt.Print(err.Error())
