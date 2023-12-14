@@ -3,12 +3,47 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"fmt"
+	"strconv"
+	"runtime/debug"
 	"github.com/jmoiron/sqlx"
 	"github.com/Akshay9597/Task-Management/task-svc/internal/tasks"
+	"github.com/Akshay9597/Task-Management/task-svc/internal/config"
 )
+
+func (h *Handler) createPostgresDB(cfg config.DBConfig) (*sqlx.DB, error){
+	fmt.Print()
+	command := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
+		cfg.Host, cfg.Port, cfg.Username, cfg.Name, cfg.SSLMode, cfg.Password,
+	)
+	fmt.Print(command)
+
+	db, err := sqlx.Connect("postgres", command)
+
+	if(err != nil){
+		return nil, err
+	}
+
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
+	if(err != nil){ // second one just to remove error at the moment
+		// TODO: Log DB error
+		fmt.Print(err.Error())
+	}
+
+	h.db = db
+
+	return db, err
+}
 
 type createTaskResponse struct {
 	Id int `json:"id"`
+}
+
+type fetchAllRecordsResponse struct {
+	Records []tasks.Task `json:"tasks"`
 }
 
 type errorResponse struct {
@@ -20,15 +55,34 @@ type Handler struct {
 }
 
 func NewHandler(db *sqlx.DB) *Handler {
-	return &Handler{db: db}
+	return &Handler{ db: db}
 }
 
-func (h *Handler) createTask( ctx *gin.Context){
+func (h *Handler) newTask( ctx *gin.Context){
+
+	defer func() {
+		if panicInfo := recover(); panicInfo != nil {
+			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
+			if(h.db == nil){
+				fmt.Printf("DB is null")
+				cfg, err := config.Init()
+				if(err != nil){ 
+					// TODO: Log host not specified
+				}
+				h.createPostgresDB(cfg)
+				
+			}
+		}
+	}()
+
 	var request tasks.Task
+
+	fmt.Print(request.Title)
 
 	if err:= ctx.BindJSON(&request); err!=nil {
 		// TODO: Log Bad request
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse{err.Error()})
+		fmt.Print(err.Error())
 		return
 	}
 
@@ -37,12 +91,72 @@ func (h *Handler) createTask( ctx *gin.Context){
 	row:= h.db.QueryRow("INSERT into tasks (title,user_id) VALUES ($1, $2) RETURNING id", request.Title, request.UserId)
 
 	if err:= row.Scan(&id); err != nil {
+		fmt.Print(err.Error())
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse{err.Error()})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, createTaskResponse{id})
 
+}
+
+func (h *Handler) fetchAllRecords(ctx *gin.Context) {
+	defer func() {
+		if panicInfo := recover(); panicInfo != nil {
+			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
+			if(h.db == nil){
+				fmt.Printf("DB is null")
+				cfg, err := config.Init()
+				if(err != nil){ 
+					// TODO: Log host not specified
+				}
+				h.createPostgresDB(cfg)
+				
+			}
+		}
+	}()
+	var records [] tasks.Task
+	err:= h.db.Select(&records, "SELECT * FROM tasks")
+
+	if err != nil {
+		fmt.Print(err.Error())
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse{err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, fetchAllRecordsResponse{records})
+}
+
+func (h *Handler) getRecord(ctx *gin.Context) {
+	defer func() {
+		if panicInfo := recover(); panicInfo != nil {
+			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
+			if(h.db == nil){
+				fmt.Printf("DB is null")
+				cfg, err := config.Init()
+				if(err != nil){ 
+					// TODO: Log host not specified
+				}
+				h.createPostgresDB(cfg)
+				
+			}
+		}
+	}()
+	id, err := strconv.Atoi(ctx.Param("id"))
+
+	if err != nil {
+		fmt.Print(err.Error())
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse{"Invalid id"})
+		return
+	}
+
+	var task tasks.Task
+	err = h.db.Get(&task, "SELECT * FROM tasks WHERE id=$1", id)
+	if err != nil {
+		fmt.Print(err.Error())
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse{err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, task)
 }
 
 func (h *Handler) Init() *gin.Engine {
@@ -61,5 +175,7 @@ func (h *Handler) Init() *gin.Engine {
 
 func (h *Handler) configureV1Routes(router *gin.Engine){
 	routes := router.Group("/api/v1")
-	routes.POST("/tasks",h.createTask)
+	routes.POST("/tasks",h.newTask)
+	routes.GET("/tasks",h.fetchAllRecords)
+	routes.GET("/tasks/:id",h.getRecord)
 }

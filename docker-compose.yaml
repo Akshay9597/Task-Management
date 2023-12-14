@@ -15,17 +15,25 @@ services :
         command: ./task-svc
         restart: on-failure
         ports:
-            - 8003:8080
-        
+            - 8003:8000
+        depends_on:
+            - db
+        environment:
+            - DB_HOST=db
+            - DB_PORT=5432
+            - DB_NAME=tasks
+            - DB_USER=postgres
+            - DB_PASS=qwerty
+            - DB_SSLMODE=disable
 
-    # db: 
-    #     restart: always
-    #     image: postgres:12.0-alpine
-    #     ports: 
-    #         - 5433:5432
-    #     volumes:
-    #         - ./create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
-    #         - ./.build/volumes/databases/postgres/data:/var/lib/postgresql/data
-    #     environment:
-    #         - POSTGRES_USER=postgres
-    #         - POSTGRES_PASSWORD=qwerty
+    db: 
+        restart: always
+        image: postgres:12.0-alpine
+        ports: 
+            - 5433:5432
+        volumes:
+            - ./create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
+            - ./.build/volumes/databases/postgres/data:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=qwerty

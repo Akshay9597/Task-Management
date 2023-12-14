@@ -1,6 +1,14 @@
 {
     "version":2,
     "port":8080,
+    "extra_config": {
+        "github_com/devopsfaith/krakend-gologging": {
+          "level": "DEBUG",
+          "prefix": "[KRAKEND]",
+          "syslog": false,
+          "stdout": true
+        }
+      },
     "endpoints": [
         {
             "endpoint":"/tasks",
@@ -13,6 +21,28 @@
                         "http://task-svc:8000"
                     ]
                 }
+            ]
+        },
+        {
+            "endpoint": "/tasks",
+            "backend": [
+              {
+                "url_pattern": "/api/v1/tasks",
+                "host": [
+                    "http://task-svc:8000"
+                ]
+              }
+            ]
+        },
+        {
+            "endpoint": "/tasks/{id}",
+            "backend": [
+              {
+                "url_pattern": "/api/v1/tasks/{id}",
+                "host": [
+                    "http://task-svc:8000"
+                ]
+              }
             ]
         }
     ]

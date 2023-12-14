@@ -10,17 +10,23 @@ import(
 	"github.com/jmoiron/sqlx"
 	"fmt"
 	"github.com/Akshay9597/Task-Management/task-svc/internal/handlers"
+	"github.com/Akshay9597/Task-Management/task-svc/internal/config"
+	// postgres driver import
+	_ "github.com/lib/pq"
 )
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func createPostgresDB() (*sqlx.DB, error){
-	db, err := sqlx.Connect(
-		"postgres",
-		fmt.Sprintf("host=db port=5432 user=postgres dbname=tasks sslmode=disable password=qwerty"),
+func createPostgresDB(cfg config.DBConfig) (*sqlx.DB, error){
+	fmt.Print()
+	command := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
+		cfg.Host, cfg.Port, cfg.Username, cfg.Name, cfg.SSLMode, cfg.Password,
 	)
+	fmt.Print(command)
+
+	db, err := sqlx.Connect("postgres", command)
 
 	if(err != nil){
 		return nil, err
@@ -55,11 +61,19 @@ func (s *Server) stopServer(ctx context.Context)  error {
 
 func main(){
 
-	db,error := createPostgresDB()
+	cfg, err := config.Init()
 
-	if(error != nil && db == nil){ // second one just to remove error at the moment
+	if(err != nil){
+		// TODO: Log host not specified
+	}
+
+
+	db,error := createPostgresDB(cfg)
+	// createPostgresDB()
+
+	if(error != nil){ // second one just to remove error at the moment
 		// TODO: Log DB error
-		return
+		fmt.Print(error.Error())
 	}
 
 	handler := handlers.NewHandler(db)
@@ -69,6 +83,7 @@ func main(){
 	go func() {
 		if err := server.runServer(); err != nil {
 			// TODO: Log error
+			
 		}
 	}()
 
