@@ -1,4 +1,4 @@
-package handlers
+package utils
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,11 +7,10 @@ import (
 	"strconv"
 	"runtime/debug"
 	"github.com/jmoiron/sqlx"
-	"github.com/Akshay9597/Task-Management/task-svc/internal/tasks"
-	"github.com/Akshay9597/Task-Management/task-svc/internal/config"
+	"github.com/Akshay9597/Task-Management/task-svc/utils"
 )
 
-func (h *Handler) createPostgresDB(cfg config.DBConfig) (*sqlx.DB, error){
+func (h *Handler) createPostgresDB(cfg utils.DBConfig) (*sqlx.DB, error){
 	fmt.Print()
 	command := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.Name, cfg.SSLMode, cfg.Password,
@@ -43,7 +42,7 @@ type createTaskResponse struct {
 }
 
 type fetchAllRecordsResponse struct {
-	Records []tasks.Task `json:"tasks"`
+	Records []utils.Task `json:"tasks"`
 }
 
 type errorResponse struct {
@@ -65,7 +64,7 @@ func (h *Handler) newTask( ctx *gin.Context){
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := config.Init()
+				cfg, err := utils.Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}
@@ -75,7 +74,7 @@ func (h *Handler) newTask( ctx *gin.Context){
 		}
 	}()
 
-	var request tasks.Task
+	var request utils.Task
 
 	fmt.Print(request.Title)
 
@@ -106,7 +105,7 @@ func (h *Handler) fetchAllRecords(ctx *gin.Context) {
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := config.Init()
+				cfg, err := utils.Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}
@@ -132,7 +131,7 @@ func (h *Handler) getRecord(ctx *gin.Context) {
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := config.Init()
+				cfg, err := utils.Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}

@@ -9,8 +9,7 @@ import(
 	"syscall"
 	"github.com/jmoiron/sqlx"
 	"fmt"
-	"github.com/Akshay9597/Task-Management/task-svc/internal/handlers"
-	"github.com/Akshay9597/Task-Management/task-svc/internal/config"
+	"github.com/Akshay9597/Task-Management/task-svc/utils"
 	// postgres driver import
 	_ "github.com/lib/pq"
 )
@@ -19,7 +18,7 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func createPostgresDB(cfg config.DBConfig) (*sqlx.DB, error){
+func createPostgresDB(cfg utils.DBConfig) (*sqlx.DB, error){
 	fmt.Print()
 	command := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.Name, cfg.SSLMode, cfg.Password,
@@ -61,7 +60,7 @@ func (s *Server) stopServer(ctx context.Context)  error {
 
 func main(){
 
-	cfg, err := config.Init()
+	cfg, err := utils.Init()
 
 	if(err != nil){
 		// TODO: Log host not specified
@@ -76,7 +75,7 @@ func main(){
 		fmt.Print(error.Error())
 	}
 
-	handler := handlers.NewHandler(db)
+	handler := utils.NewHandler(db)
 
 	server := createServer(handler.Init())
 
