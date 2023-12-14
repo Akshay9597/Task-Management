@@ -1,4 +1,4 @@
-package users
+package utils
 
 type (
 	User struct {

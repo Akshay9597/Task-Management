@@ -1,4 +1,4 @@
-package handlers
+package utils
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,11 +7,9 @@ import (
 	"strconv"
 	"runtime/debug"
 	"github.com/jmoiron/sqlx"
-	"github.com/Akshay9597/Task-Management/user-svc/internal/users"
-	"github.com/Akshay9597/Task-Management/user-svc/internal/config"
 )
 
-func (h *Handler) createPostgresDB(cfg config.DBConfig) (*sqlx.DB, error){
+func (h *Handler) createPostgresDB(cfg DBConfig) (*sqlx.DB, error){
 	fmt.Print()
 	command := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.Name, cfg.SSLMode, cfg.Password,
@@ -65,7 +63,7 @@ func (h *Handler) signup( ctx *gin.Context){
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := config.Init()
+				cfg, err := Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}
@@ -75,7 +73,7 @@ func (h *Handler) signup( ctx *gin.Context){
 		}
 	}()
 
-	var request users.User
+	var request User
 
 	fmt.Print(request.FirstName)
 
@@ -106,7 +104,7 @@ func (h *Handler) getRecord(ctx *gin.Context) {
 			fmt.Printf("%v, %s", panicInfo, string(debug.Stack()))
 			if(h.db == nil){
 				fmt.Printf("DB is null")
-				cfg, err := config.Init()
+				cfg, err := Init()
 				if(err != nil){ 
 					// TODO: Log host not specified
 				}
@@ -123,7 +121,7 @@ func (h *Handler) getRecord(ctx *gin.Context) {
 		return
 	}
 
-	var user users.User
+	var user User
 	err = h.db.Get(&user, "SELECT id, first_name, last_name, username FROM users WHERE id=$1", id)
 	if err != nil {
 		fmt.Print(err.Error())
