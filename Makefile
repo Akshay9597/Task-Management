@@ -10,3 +10,6 @@ migrate-tasks:
 
 migrate-tasks-drop:
 	migrate -path ./task-svc/schema -database 'postgres://postgres:qwerty@0.0.0.0:5433/tasks?sslmode=disable' drop
+
+migrate-users:
+	migrate -path ./user-svc/schema -database 'postgres://postgres:qwerty@0.0.0.0:5433/users?sslmode=disable' up

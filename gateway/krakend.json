@@ -11,6 +11,30 @@
       },
     "endpoints": [
         {
+          "endpoint":"/signup",
+          "method":"POST",
+          "backend":[
+              {
+                  "url_pattern": "/api/v1/signup",
+                  "method":"POST",
+                  "host": [
+                      "http://user-svc:8000"
+                  ]
+              }
+          ]
+        },
+        {
+            "endpoint": "/users/{id}",
+            "backend": [
+              {
+                "url_pattern": "/api/v1/users/{id}",
+                "host": [
+                    "http://user-svc:8000"
+                ]
+              }
+            ]
+        },
+        {
             "endpoint":"/tasks",
             "method":"POST",
             "backend":[

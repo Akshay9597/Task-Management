@@ -8,6 +8,22 @@ services :
             - ./gateway:/etc/krakend
         ports:
             - 8080:8080
+    
+    user-svc:
+        build: ./user-svc/.
+        command: ./user-svc
+        restart: on-failure
+        ports:
+            - 8001:8000
+        depends_on:
+            - db
+        environment:
+            - DB_HOST=db
+            - DB_PORT=5432
+            - DB_NAME=users
+            - DB_USER=postgres
+            - DB_PASS=qwerty
+            - DB_SSLMODE=disable
 
 
     task-svc:

@@ -9,8 +9,8 @@ import(
 	"syscall"
 	"github.com/jmoiron/sqlx"
 	"fmt"
-	"github.com/Akshay9597/Task-Management/task-svc/internal/handlers"
-	"github.com/Akshay9597/Task-Management/task-svc/internal/config"
+	"github.com/Akshay9597/Task-Management/user-svc/internal/handlers"
+	"github.com/Akshay9597/Task-Management/user-svc/internal/config"
 	// postgres driver import
 	_ "github.com/lib/pq"
 )
