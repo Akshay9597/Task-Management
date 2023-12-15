@@ -8,7 +8,7 @@ import (
 	"strings"
 	"runtime/debug"
 	"github.com/jmoiron/sqlx"
-	"github.com/Akshay9597/Task-Management/auth/jwt"
+	// "github.com/Akshay9597/Task-Management/auth"
 )
 
 func (h *Handler) createPostgresDB(cfg DBConfig) (*sqlx.DB, error){
@@ -68,7 +68,7 @@ func (h * Handler) handleAuth(ctx *gin.Context){
 		return
 	}
 
-	// token, err := auth.parseToken(header_parts[1])
+	// token, err := auth.parseToken()
 
 	// if(token!=nil && err!=nil){
 
