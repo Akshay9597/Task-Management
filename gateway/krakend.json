@@ -24,6 +24,26 @@
           ]
         },
         {
+          "endpoint": "token",
+          "backend": [
+            {
+              "url_pattern": "/api/v1/token",
+              "host": [
+                  "http://user-svc:8000"
+              ]
+            }
+          ],
+          "extra_config": {
+            "github.com/devopsfaith/krakend-jose/signer": {
+              "alg": "HS256",
+              "kid": "1",
+              "keys-to-sign": ["access_token"],
+              "jwk-url": "http://file_server:8080/jwk/symmetric.json",
+              "disable_jwk_security": true
+            }
+          }
+      },
+        {
             "endpoint": "/users/{id}",
             "backend": [
               {
@@ -32,7 +52,16 @@
                     "http://user-svc:8000"
                 ]
               }
-            ]
+            ],
+            "extra_config": {
+              "github.com/devopsfaith/krakend-jose/validator": {
+                "alg": "HS256",
+                "audience": ["http://gateway:8080"],
+                "issuer": "http://user-svc:8000",
+                "jwk-url": "http://file_server:8080/jwk/symmetric.json",
+                "disable_jwk_security": true
+              }
+            }
         },
         {
             "endpoint":"/tasks",
@@ -45,7 +74,16 @@
                         "http://task-svc:8000"
                     ]
                 }
-            ]
+            ],
+            "extra_config": {
+              "github.com/devopsfaith/krakend-jose/validator": {
+                "alg": "HS256",
+                "audience": ["http://gateway:8080"],
+                "issuer": "http://user-svc:8000",
+                "jwk-url": "http://file_server:8080/jwk/symmetric.json",
+                "disable_jwk_security": true
+              }
+            }
         },
         {
             "endpoint": "/tasks",

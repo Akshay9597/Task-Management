@@ -5,13 +5,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var Audience string
-var Issuer string
-
-func setParams(audience string, issuer string) {
-	Audience = audience
-	Issuer = issuer
-}
+var Audience = "http://gateway:8080"
+var Issuer = "http://users-service:8000"
 
 type (
 	AccessToken struct {

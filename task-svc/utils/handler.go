@@ -8,7 +8,6 @@ import (
 	"strings"
 	"runtime/debug"
 	"github.com/jmoiron/sqlx"
-	// "github.com/Akshay9597/Task-Management/auth"
 )
 
 func (h *Handler) createPostgresDB(cfg DBConfig) (*sqlx.DB, error){
@@ -68,11 +67,14 @@ func (h * Handler) handleAuth(ctx *gin.Context){
 		return
 	}
 
-	// token, err := auth.parseToken()
+	access_token, err := parseToken(header_parts[1])
 
-	// if(token!=nil && err!=nil){
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse{err.Error()})
+		return
+	}
 
-	// }
+	ctx.Set("user_id", access_token.UserId)
 
 
 }
