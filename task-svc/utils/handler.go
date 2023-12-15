@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"fmt"
 	"strconv"
+	"strings"
 	"runtime/debug"
 	"github.com/jmoiron/sqlx"
+	"github.com/Akshay9597/Task-Management/auth"
 )
 
 func (h *Handler) createPostgresDB(cfg DBConfig) (*sqlx.DB, error){
@@ -54,6 +56,25 @@ type Handler struct {
 
 func NewHandler(db *sqlx.DB) *Handler {
 	return &Handler{ db: db}
+}
+
+func (h * Handler) handleAuth(ctx *gin.Context){
+	auth_header := ctx.GetHeader("Authorization")
+
+	header_parts := strings.Split(auth_header, " ");
+
+	if len(header_parts) != 2 || header_parts[0] != "Bearer" {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse{"Incorrect Authorization header"})
+		return
+	}
+
+	token, err := auth.parseToken(header_parts[1])
+
+	if(token!=nil && err!=nil){
+
+	}
+
+
 }
 
 func (h *Handler) newTask( ctx *gin.Context){
