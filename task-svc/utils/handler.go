@@ -8,7 +8,7 @@ import (
 	"strings"
 	"runtime/debug"
 	"github.com/jmoiron/sqlx"
-	"github.com/Akshay9597/Task-Management/auth"
+	"github.com/Akshay9597/Task-Management/auth/jwt/auth"
 )
 
 func (h *Handler) createPostgresDB(cfg DBConfig) (*sqlx.DB, error){

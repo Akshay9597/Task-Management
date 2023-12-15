@@ -1,4 +1,4 @@
-module github.com/Akshay9597/Task-Management/auth
+module github.com/Akshay9597/Task-Management/auth/jwt
 
 go 1.15
 
